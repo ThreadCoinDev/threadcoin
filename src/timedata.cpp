@@ -99,7 +99,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Please check that your computer's date and time are correct! If your clock is wrong Threadcoin Core will not work properly.");
+                    string strMessage = _("Por favor, compruebe que la fecha y la hora de su computadora son correctas! Si su reloj no funciona, Threadcoin Core no funcionará correctamente.");
                     strMiscWarning = strMessage;
                     uiInterface.ThreadSafeMessageBox(strMessage, "", CClientUIInterface::MSG_WARNING);
                 }
