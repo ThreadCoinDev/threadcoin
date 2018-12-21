@@ -350,29 +350,29 @@ bool CPrivateSend::IsDenominatedAmount(CAmount nInputAmount)
 std::string CPrivateSend::GetMessageByID(PoolMessage nMessageID)
 {
     switch (nMessageID) {
-        case ERR_ALREADY_HAVE:          return _("Already have that input.");
-        case ERR_DENOM:                 return _("No matching denominations found for mixing.");
-        case ERR_ENTRIES_FULL:          return _("Entries are full.");
-        case ERR_EXISTING_TX:           return _("Not compatible with existing transactions.");
-        case ERR_FEES:                  return _("Transaction fees are too high.");
-        case ERR_INVALID_COLLATERAL:    return _("Collateral not valid.");
-        case ERR_INVALID_INPUT:         return _("Input is not valid.");
-        case ERR_INVALID_SCRIPT:        return _("Invalid script detected.");
-        case ERR_INVALID_TX:            return _("Transaction not valid.");
-        case ERR_MAXIMUM:               return _("Entry exceeds maximum size.");
-        case ERR_MN_LIST:               return _("Not in the Masternode list.");
-        case ERR_MODE:                  return _("Incompatible mode.");
-        case ERR_NON_STANDARD_PUBKEY:   return _("Non-standard public key detected.");
-        case ERR_NOT_A_MN:              return _("This is not a Masternode."); // not used
-        case ERR_QUEUE_FULL:            return _("Masternode queue is full.");
-        case ERR_RECENT:                return _("Last PrivateSend was too recent.");
-        case ERR_SESSION:               return _("Session not complete!");
-        case ERR_MISSING_TX:            return _("Missing input transaction information.");
-        case ERR_VERSION:               return _("Incompatible version.");
-        case MSG_NOERR:                 return _("No errors detected.");
-        case MSG_SUCCESS:               return _("Transaction created successfully.");
-        case MSG_ENTRIES_ADDED:         return _("Your entries added successfully.");
-        default:                        return _("Unknown response.");
+        case ERR_ALREADY_HAVE:          return _("Ya tiene esa entrada.");
+        case ERR_DENOM:                 return _("No se encontraron denominaciones coincidentes para la mezcla.");
+        case ERR_ENTRIES_FULL:          return _("Las entradas están llenas.");
+        case ERR_EXISTING_TX:           return _("No es compatible con transacciones existentes.");
+        case ERR_FEES:                  return _("Las tarifas de transacción son demasiado altas.");
+        case ERR_INVALID_COLLATERAL:    return _("Garantía no válida.");
+        case ERR_INVALID_INPUT:         return _("La entrada no es válida.");
+        case ERR_INVALID_SCRIPT:        return _("Se detectó un script no válido.");
+        case ERR_INVALID_TX:            return _("La transacción no es válida.");
+        case ERR_MAXIMUM:               return _("La entrada supera el tamaño máximo.");
+        case ERR_MN_LIST:               return _("No en la lista de Masternodos.");
+        case ERR_MODE:                  return _("Modo incompatible.");
+        case ERR_NON_STANDARD_PUBKEY:   return _("Non-standard public key detectada.");
+        case ERR_NOT_A_MN:              return _("Esto no es un masternodo."); // not used
+        case ERR_QUEUE_FULL:            return _("La cola de Masternode está llena.");
+        case ERR_RECENT:                return _("El último envío privado fue demasiado reciente.");
+        case ERR_SESSION:               return _("¡Sesión incompleta!");
+        case ERR_MISSING_TX:            return _("Falta información de la transacción de entrada.");
+        case ERR_VERSION:               return _("Version incompatible.");
+        case MSG_NOERR:                 return _("Sin errores detectados.");
+        case MSG_SUCCESS:               return _("Transacción creada correctamente.");
+        case MSG_ENTRIES_ADDED:         return _("Las entradas han sido añadidas.");
+        default:                        return _("Sin respuesta.");
     }
 }
 
