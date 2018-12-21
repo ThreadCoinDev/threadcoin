@@ -109,14 +109,14 @@ void CMasternodeSync::SwitchToNextAsset(CConnman& connman)
 std::string CMasternodeSync::GetSyncStatus()
 {
     switch (masternodeSync.nRequestedMasternodeAssets) {
-        case MASTERNODE_SYNC_INITIAL:       return _("Synchroning blockchain...");
-        case MASTERNODE_SYNC_WAITING:       return _("Synchronization pending...");
-        case MASTERNODE_SYNC_LIST:          return _("Synchronizing masternodes...");
-        case MASTERNODE_SYNC_MNW:           return _("Synchronizing masternode payments...");
-        case MASTERNODE_SYNC_GOVERNANCE:    return _("Synchronizing governance objects...");
-        case MASTERNODE_SYNC_FAILED:        return _("Synchronization failed");
-        case MASTERNODE_SYNC_FINISHED:      return _("Synchronization finished");
-        default:                            return "";
+        case MASTERNODE_SYNC_INITIAL:       return _("Sincronizando blockchain...");
+        case MASTERNODE_SYNC_WAITING:       return _("Sincronización pendiente...");
+        case MASTERNODE_SYNC_LIST:          return _("Sincronizando masternodos...");
+        case MASTERNODE_SYNC_MNW:           return _("Sincronizando pagos de masternodos...");
+        case MASTERNODE_SYNC_GOVERNANCE:    return _("Sincronizando desde thdservices.masternodes...");
+        case MASTERNODE_SYNC_FAILED:        return _("Sincronización fallida");
+        case MASTERNODE_SYNC_FINISHED:      return _("Sincronización finalizada");
+        default:                            return _("Más servicios en thdservices.io")
     }
 }
 
