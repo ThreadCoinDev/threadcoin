@@ -83,8 +83,8 @@ bool AppInit(int argc, char* argv[])
         }
         else
         {
-            strUsage += "\n" + _("Usage:") + "\n" +
-                  "  threadcoind [options]                     " + _("Start Threadcoin Core Daemon") + "\n";
+            strUsage += "\n" + _("Uso:") + "\n" +
+                  "  threadcoind [options]                     " + _("Iniciar daemon de Threadcoin") + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }
@@ -98,19 +98,19 @@ bool AppInit(int argc, char* argv[])
         bool datadirFromCmdLine = mapArgs.count("-datadir") != 0;
         if (datadirFromCmdLine && !boost::filesystem::is_directory(GetDataDir(false)))
         {
-            fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", mapArgs["-datadir"].c_str());
+            fprintf(stderr, "Error: Directorio especificado de datos \"%s\" no existe.\n", mapArgs["-datadir"].c_str());
             return false;
         }
         try
         {
             ReadConfigFile(mapArgs, mapMultiArgs);
         } catch (const std::exception& e) {
-            fprintf(stderr,"Error reading configuration file: %s\n", e.what());
+            fprintf(stderr,"Error leyendo archivo de configuración: %s\n", e.what());
             return false;
         }
         if (!datadirFromCmdLine && !boost::filesystem::is_directory(GetDataDir(false)))
         {
-            fprintf(stderr, "Error: Specified data directory \"%s\" from config file does not exist.\n", mapArgs["-datadir"].c_str());
+            fprintf(stderr, "Error: Directorio especificado para los datos \"%s\" desde el archivo de configuración, no existe.\n", mapArgs["-datadir"].c_str());
             return EXIT_FAILURE;
         }
         // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
@@ -124,7 +124,7 @@ bool AppInit(int argc, char* argv[])
         // parse masternode.conf
         std::string strErr;
         if(!masternodeConfig.read(strErr)) {
-            fprintf(stderr,"Error reading masternode configuration file: %s\n", strErr.c_str());
+            fprintf(stderr,"Error al leer el archivo de configuración de masternodos: %s\n", strErr.c_str());
             return false;
         }
 
@@ -136,14 +136,14 @@ bool AppInit(int argc, char* argv[])
 
         if (fCommandLine)
         {
-            fprintf(stderr, "Error: There is no RPC client functionality in threadcoind anymore. Use the threadcoin-cli utility instead.\n");
+            fprintf(stderr, "Error: ya no hay funcionalidad de cliente RPC en threadcoind. Utilice la utilidad threadcoin-cli en su lugar.\n");
             exit(EXIT_FAILURE);
         }
 #ifndef WIN32
         fDaemon = GetBoolArg("-daemon", false);
         if (fDaemon)
         {
-            fprintf(stdout, "Threadcoin Core server starting\n");
+            fprintf(stdout, "Threadcoin Core server iniciando\n");
 
             // Daemonize
             pid_t pid = fork();
