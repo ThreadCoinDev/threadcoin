@@ -593,8 +593,8 @@ const boost::filesystem::path &GetBackupsDir()
         // Path must exist
         if (fs::is_directory(backupsDir)) return backupsDir;
         // Fallback to default path if it doesn't
-        LogPrintf("%s: Warning: incorrect parameter -walletbackupsdir, path must exist! Using default path.\n", __func__);
-        strMiscWarning = _("Warning: incorrect parameter -walletbackupsdir, path must exist! Using default path.");
+        LogPrintf("%s: Advertencia: parámetro incorrecto -walletbackupsdir, la ruta debe existir! Usando la ruta por defecto.\n", __func__);
+        strMiscWarning = _("Advertencia: parámetro incorrecto -walletbackupsdir, la ruta debe existir! Usando la ruta por defecto.");
     }
     // Default path
     backupsDir = GetDataDir() / "backups";
