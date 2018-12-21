@@ -250,7 +250,7 @@ bool CBlockTreeDB::ReadAddressUnspentIndex(uint160 addressHash, int type,
                 unspentOutputs.push_back(make_pair(key.second, nValue));
                 pcursor->Next();
             } else {
-                return error("failed to get address unspent value");
+                return error("no se pudo obtener la dirección valor no gastado");
             }
         } else {
             break;
@@ -298,7 +298,7 @@ bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,
                 addressIndex.push_back(make_pair(key.second, nValue));
                 pcursor->Next();
             } else {
-                return error("failed to get address index value");
+                return error("no se pudo obtener el valor del índice de dirección");
             }
         } else {
             break;
@@ -379,7 +379,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
 
                 pcursor->Next();
             } else {
-                return error("%s: failed to read value", __func__);
+                return error("%s: fallo al leer el valor", __func__);
             }
         } else {
             break;
@@ -473,7 +473,7 @@ bool CCoinsViewDB::Upgrade() {
             if (count++ % 256 == 0) {
                 uint32_t high = 0x100 * *key.second.begin() + *(key.second.begin() + 1);
                 int percentageDone = (int)(high * 100.0 / 65536.0 + 0.5);
-                uiInterface.ShowProgress(_("Upgrading UTXO database") + "\n"+ _("(press q to shutdown and continue later)") + "\n", percentageDone);
+                uiInterface.ShowProgress(_("Upgrading UTXO database") + "\n"+ _("(presiona q para apagar y continuar mas tarde)") + "\n", percentageDone);
                 if (reportDone < percentageDone/10) {
                     // report max. every 10% step
                     LogPrintf("[%d%%]...", percentageDone);
@@ -482,7 +482,7 @@ bool CCoinsViewDB::Upgrade() {
             }
             CCoins old_coins;
             if (!pcursor->GetValue(old_coins)) {
-                return error("%s: cannot parse CCoins record", __func__);
+                return error("%s: no se puede analizar el registro de CCoins", __func__);
             }
             COutPoint outpoint(key.second, 0);
             for (size_t i = 0; i < old_coins.vout.size(); ++i) {
