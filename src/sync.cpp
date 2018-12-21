@@ -74,8 +74,8 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
     bool onlyMaybeDeadlock = false;
     std::string strOutput = "";
 
-    strOutput += "POTENTIAL DEADLOCK DETECTED\n";
-    strOutput += "Previous lock order was:\n";
+    strOutput += "POTENCIAL DEADLOCK DETECTADO\n";
+    strOutput += "La orden de bloqueo anterior era:\n";
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s2) {
         if (i.first == mismatch.first) {
             strOutput += " (1)";
@@ -93,7 +93,7 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
     }
     firstLocked = false;
     secondLocked = false;
-    strOutput += "Current lock order is:\n";
+    strOutput += "Orden de bloqueo actual es:\n";
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s1) {
         if (i.first == mismatch.first) {
             strOutput += " (1)";
@@ -173,7 +173,7 @@ void AssertLockHeldInternal(const char* pszName, const char* pszFile, int nLine,
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, *lockstack)
         if (i.first == cs)
             return;
-    fprintf(stderr, "Assertion failed: lock %s not held in %s:%i; locks held:\n%s", pszName, pszFile, nLine, LocksHeld().c_str());
+    fprintf(stderr, "Fallo de aserción: el bloqueo %s no se mantiene en %s:%i; cerraduras retenidas:\n%s", pszName, pszFile, nLine, LocksHeld().c_str());
     abort();
 }
 
