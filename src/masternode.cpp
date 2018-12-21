@@ -362,23 +362,23 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
 
     //need correct blocks to send ping
     if (!fOffline && !masternodeSync.IsBlockchainSynced())
-        return Log("Sync in progress. Must wait until sync is complete to start Masternode");
+        return Log("Sincronización en progreso. Debe esperar hasta que se complete la sincronización para iniciar Masternodo");
 
     if (!CMessageSigner::GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew))
-        return Log(strprintf("Invalid masternode key %s", strKeyMasternode));
+        return Log(strprintf("Clave de masternodo inválida %s", strKeyMasternode));
 
     if (!pwalletMain->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
-        return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
+        return Log(strprintf("No se pudo asignar el punto de salida %s:%s para masternodo %s", strTxHash, strOutputIndex, strService));
 
     CService service;
     if (!Lookup(strService.c_str(), service, 0, false))
-        return Log(strprintf("Invalid address %s for masternode.", strService));
+        return Log(strprintf("Dirección %s inválida para masternodo.", strService));
     int mainnetDefaultPort = Params(CBaseChainParams::MAIN).GetDefaultPort();
     if (Params().NetworkIDString() == CBaseChainParams::MAIN) {
         if (service.GetPort() != mainnetDefaultPort)
-            return Log(strprintf("Invalid port %u for masternode %s, only %d is supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort));
+            return Log(strprintf("Puerto %u inválido para masternodo %s, solo %d es soportado en la red principal.", service.GetPort(), strService, mainnetDefaultPort));
     } else if (service.GetPort() == mainnetDefaultPort)
-        return Log(strprintf("Invalid port %u for masternode %s, %d is the only supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort));
+        return Log(strprintf("Puerto %u inválido para masternodo %s, solo %d es soportado en la red principal.", service.GetPort(), strService, mainnetDefaultPort));
 
     return Create(outpoint, service, keyCollateralAddressNew, pubKeyCollateralAddressNew, keyMasternodeNew, pubKeyMasternodeNew, strErrorRet, mnbRet);
 }
@@ -402,16 +402,16 @@ bool CMasternodeBroadcast::Create(const COutPoint& outpoint, const CService& ser
 
     CMasternodePing mnp(outpoint);
     if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew))
-        return Log(strprintf("Failed to sign ping, masternode=%s", outpoint.ToStringShort()));
+        return Log(strprintf("Fallo firmar el ping, masternode=%s", outpoint.ToStringShort()));
 
     mnbRet = CMasternodeBroadcast(service, outpoint, pubKeyCollateralAddressNew, pubKeyMasternodeNew, PROTOCOL_VERSION);
 
     if (!mnbRet.IsValidNetAddr())
-        return Log(strprintf("Invalid IP address, masternode=%s", outpoint.ToStringShort()));
+        return Log(strprintf("Dirección de ip inválida, masternode=%s", outpoint.ToStringShort()));
 
     mnbRet.lastPing = mnp;
     if (!mnbRet.Sign(keyCollateralAddressNew))
-        return Log(strprintf("Failed to sign broadcast, masternode=%s", outpoint.ToStringShort()));
+        return Log(strprintf("Falló el inicio del masternodo, masternode=%s", outpoint.ToStringShort()));
 
     return true;
 }
