@@ -107,7 +107,7 @@ static void CheckBlockIndex(const Consensus::Params& consensusParams);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "DarkCoin Signed Message:\n";
+const string strMessageMagic = "Threadcoin mensaje firmado:\n";
 
 // Internal stuff
 namespace {
@@ -376,7 +376,7 @@ bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints* lp, bool 
             const CTxIn& txin = tx.vin[txinIndex];
             Coin coin;
             if (!viewMemPool.GetCoin(txin.prevout, coin)) {
-                return error("%s: Missing input", __func__);
+                return error("%s: Registro faltante", __func__);
             }
             if (coin.nHeight == MEMPOOL_HEIGHT) {
                 // Assume all mempool transaction confirm in the next block
@@ -535,7 +535,7 @@ bool ContextualCheckTransaction(const CTransaction& tx, CValidationState &state,
 void LimitMempoolSize(CTxMemPool& pool, size_t limit, unsigned long age) {
     int expired = pool.Expire(GetTime() - age);
     if (expired != 0)
-        LogPrint("mempool", "Expired %i transactions from the memory pool\n", expired);
+        LogPrint("mempool", "Caducaron %i transacciones desde la memoria del pool\n", expired);
 
     std::vector<COutPoint> vNoSpendsRemaining;
     pool.TrimToSize(limit, &vNoSpendsRemaining);
@@ -593,7 +593,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
 
     // If this is a Transaction Lock Request check to see if it's valid
     if(instantsend.HasTxLockRequest(hash) && !CTxLockRequest(tx).IsValid())
-        return state.DoS(10, error("AcceptToMemoryPool : CTxLockRequest %s is invalid", hash.ToString()),
+        return state.DoS(10, error("AcceptToMemoryPool : CTxLockRequest %s es inválido", hash.ToString()),
                             REJECT_INVALID, "bad-txlockrequest");
 
     // Check for conflicts with a completed Transaction Lock
@@ -601,7 +601,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
     {
         uint256 hashLocked;
         if(instantsend.GetLockedOutPointTxHash(txin.prevout, hashLocked) && hash != hashLocked)
-            return state.DoS(10, error("AcceptToMemoryPool : Transaction %s conflicts with completed Transaction Lock %s",
+            return state.DoS(10, error("AcceptToMemoryPool : La transacción %s tuvo conflictos con el bloqueo de transacción completado %s",
                                     hash.ToString(), hashLocked.ToString()),
                             REJECT_INVALID, "tx-txlock-conflict");
     }
@@ -620,12 +620,12 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
                 // InstantSend txes are not replacable
                 if(instantsend.HasTxLockRequest(ptxConflicting->GetHash())) {
                     // this tx conflicts with a Transaction Lock Request candidate
-                    return state.DoS(0, error("AcceptToMemoryPool : Transaction %s conflicts with Transaction Lock Request %s",
+                    return state.DoS(0, error("AcceptToMemoryPool : La trasacción %s tuvo conflictos con la solicitud de bloqueo de transacción %s",
                                             hash.ToString(), ptxConflicting->GetHash().ToString()),
                                     REJECT_INVALID, "tx-txlockreq-mempool-conflict");
                 } else if (instantsend.HasTxLockRequest(hash)) {
                     // this tx is a tx lock request and it conflicts with a normal tx
-                    return state.DoS(0, error("AcceptToMemoryPool : Transaction Lock Request %s conflicts with transaction %s",
+                    return state.DoS(0, error("AcceptToMemoryPool : Solicitud de bloqueo de transacción %s tuvo conflictos con la transacción %s",
                                             hash.ToString(), ptxConflicting->GetHash().ToString()),
                                     REJECT_INVALID, "txlockreq-tx-mempool-conflict");
                 }
@@ -757,10 +757,10 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
 
         CAmount mempoolRejectFee = pool.GetMinFee(GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000).GetFee(nSize);
         if (mempoolRejectFee > 0 && nModifiedFees < mempoolRejectFee) {
-            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "mempool min fee not met", false, strprintf("%d < %d", nFees, mempoolRejectFee));
+            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "no se cumple la tarifa mínima de Mempool", false, strprintf("%d < %d", nFees, mempoolRejectFee));
         } else if (GetBoolArg("-relaypriority", DEFAULT_RELAYPRIORITY) && nModifiedFees < ::minRelayTxFee.GetFee(nSize) && !AllowFree(entry.GetPriority(chainActive.Height() + 1))) {
             // Require that free transactions have sufficient priority to be mined in the next block.
-            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
+            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "prioridad insuficiente");
         }
 
         // Continuously rate-limit free (really, very-low-fee) transactions
@@ -781,8 +781,8 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
             // -limitfreerelay unit is thousand-bytes-per-minute
             // At default rate it would take over a month to fill 1GB
             if (dFreeCount >= GetArg("-limitfreerelay", DEFAULT_LIMITFREERELAY) * 10 * 1000)
-                return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "rate limited free transaction");
-            LogPrint("mempool", "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount+nSize);
+                return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "tasa de transacción libre limitada");
+            LogPrint("mempool", "Límite de tarifa dFreeCount: %g => %g\n", dFreeCount, dFreeCount+nSize);
             dFreeCount += nSize;
         }
 
@@ -811,7 +811,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
             const uint256 &hashAncestor = ancestorIt->GetTx().GetHash();
             if (setConflicts.count(hashAncestor))
             {
-                return state.DoS(10, error("AcceptToMemoryPool: %s spends conflicting transaction %s",
+                return state.DoS(10, error("AcceptToMemoryPool: %s gasta transacción conflictiva %s",
                                            hash.ToString(),
                                            hashAncestor.ToString()),
                                  REJECT_INVALID, "bad-txns-spends-conflicting-tx");
@@ -852,10 +852,10 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
                 // This should be rare.
                 if (mi->IsDirty()) {
                     return state.DoS(0,
-                            error("AcceptToMemoryPool: rejecting replacement %s; cannot replace tx %s with untracked descendants",
+                            error("AcceptToMemoryPool: rechaza el reemplazo %s; no se puede reemplazar tx %s con descendientes sin seguimiento",
                                 hash.ToString(),
                                 mi->GetTx().GetHash().ToString()),
-                            REJECT_NONSTANDARD, "too many potential replacements");
+                            REJECT_NONSTANDARD, "demasiados reemplazos potenciales");
                 }
 
                 // Don't allow the replacement to reduce the feerate of the
@@ -878,11 +878,11 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
                 if (newFeeRate <= oldFeeRate)
                 {
                     return state.DoS(0,
-                            error("AcceptToMemoryPool: rejecting replacement %s; new feerate %s <= old feerate %s",
+                            error("AcceptToMemoryPool: reemplazo rechazado %s; nuevo fee %s <= antiguo fee %s",
                                   hash.ToString(),
                                   newFeeRate.ToString(),
                                   oldFeeRate.ToString()),
-                            REJECT_INSUFFICIENTFEE, "insufficient fee");
+                            REJECT_INSUFFICIENTFEE, "Fee insuficiente");
                 }
 
                 BOOST_FOREACH(const CTxIn &txin, mi->GetTx().vin)
@@ -907,11 +907,11 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
                 }
             } else {
                 return state.DoS(0,
-                        error("AcceptToMemoryPool: rejecting replacement %s; too many potential replacements (%d > %d)\n",
+                        error("AcceptToMemoryPool: reemplazo rechazado %s; demasiados reemplazos potenciales (%d > %d)\n",
                             hash.ToString(),
                             nConflictingCount,
                             maxDescendantsToVisit),
-                        REJECT_NONSTANDARD, "too many potential replacements");
+                        REJECT_NONSTANDARD, "demasiados reemplazos potenciales");
             }
 
             for (unsigned int j = 0; j < tx.vin.size(); j++)
@@ -926,7 +926,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
                     // it's cheaper to just check if the new input refers to a
                     // tx that's in the mempool.
                     if (pool.mapTx.find(tx.vin[j].prevout.hash) != pool.mapTx.end())
-                        return state.DoS(0, error("AcceptToMemoryPool: replacement %s adds unconfirmed input, idx %d",
+                        return state.DoS(0, error("AcceptToMemoryPool: reemplazo %s agrega entrada no confirmada idx %d",
                                                   hash.ToString(), j),
                                          REJECT_NONSTANDARD, "replacement-adds-unconfirmed");
                 }
@@ -937,7 +937,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
             // transactions would not be paid for.
             if (nModifiedFees < nConflictingFees)
             {
-                return state.DoS(0, error("AcceptToMemoryPool: rejecting replacement %s, less fees than conflicting txs; %s < %s",
+                return state.DoS(0, error("AcceptToMemoryPool: reemplazo rechazado %s, menos tarifas que txs en conflicto; %s < %s",
                                           hash.ToString(), FormatMoney(nModifiedFees), FormatMoney(nConflictingFees)),
                                  REJECT_INSUFFICIENTFEE, "insufficient fee");
             }
@@ -948,11 +948,11 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
             if (nDeltaFees < ::minRelayTxFee.GetFee(nSize))
             {
                 return state.DoS(0,
-                        error("AcceptToMemoryPool: rejecting replacement %s, not enough additional fees to relay; %s < %s",
+                        error("AcceptToMemoryPool: reemplazo rechazado %s, no hay tarifas adicionales suficientes para transmitir; %s < %s",
                               hash.ToString(),
                               FormatMoney(nDeltaFees),
                               FormatMoney(::minRelayTxFee.GetFee(nSize))),
-                        REJECT_INSUFFICIENTFEE, "insufficient fee");
+                        REJECT_INSUFFICIENTFEE, "fee insuficiente");
             }
         }
 
@@ -975,7 +975,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState &state, const C
         // can be exploited as a DoS attack.
         if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true))
         {
-            return error("%s: BUG! PLEASE REPORT THIS! ConnectInputs failed against MANDATORY but not STANDARD flags %s, %s",
+            return error("%s: NUG ¡POR FAVOR REPORTE ESTO! ConnectInputs falló contra MANDATORY pero no STANDARD flags %s, %s",
                 __func__, hash.ToString(), FormatStateMessage(state));
         }
 
@@ -1036,10 +1036,10 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 bool GetTimestampIndex(const unsigned int &high, const unsigned int &low, std::vector<uint256> &hashes)
 {
     if (!fTimestampIndex)
-        return error("Timestamp index not enabled");
+        return error("Índice de marca de tiempo no habilitado");
 
     if (!pblocktree->ReadTimestampIndex(high, low, hashes))
-        return error("Unable to get hashes for timestamps");
+        return error("No se pueden obtener hashes para las marcas de tiempo");
 
     return true;
 }
@@ -1062,10 +1062,10 @@ bool GetAddressIndex(uint160 addressHash, int type,
                      std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex, int start, int end)
 {
     if (!fAddressIndex)
-        return error("address index not enabled");
+        return error("índice de dirección no habilitado");
 
     if (!pblocktree->ReadAddressIndex(addressHash, type, addressIndex, start, end))
-        return error("unable to get txids for address");
+        return error("incapaz de obtener txids para la dirección");
 
     return true;
 }
@@ -1074,10 +1074,10 @@ bool GetAddressUnspent(uint160 addressHash, int type,
                        std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs)
 {
     if (!fAddressIndex)
-        return error("address index not enabled");
+        return error("índice de dirección no habilitado");
 
     if (!pblocktree->ReadAddressUnspentIndex(addressHash, type, unspentOutputs))
-        return error("unable to get txids for address");
+        return error("incapaz de obtener txids para la dirección");
 
     return true;
 }
@@ -1099,7 +1099,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &txOut, const Consensus::P
         if (pblocktree->ReadTxIndex(hash, postx)) {
             CAutoFile file(OpenBlockFile(postx, true), SER_DISK, CLIENT_VERSION);
             if (file.IsNull())
-                return error("%s: OpenBlockFile failed", __func__);
+                return error("%s: OpenBlockFile falló", __func__);
             CBlockHeader header;
             try {
                 file >> header;
@@ -1600,7 +1600,7 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage="")
     strMiscWarning = strMessage;
     LogPrintf("*** %s\n", strMessage);
     uiInterface.ThreadSafeMessageBox(
-        userMessage.empty() ? _("Error: A fatal internal error occurred, see debug.log for details") : userMessage,
+        userMessage.empty() ? _("Error: Ocurrió un error interno fatal, vea debug.log para más detalles") : userMessage,
         "", CClientUIInterface::MSG_ERROR);
     StartShutdown();
     return false;
@@ -1788,11 +1788,11 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
 
     if (fAddressIndex) {
         if (!pblocktree->EraseAddressIndex(addressIndex)) {
-            AbortNode(state, "Failed to delete address index");
+            AbortNode(state, "Error al eliminar el índice de dirección");
             return DISCONNECT_FAILED;
         }
         if (!pblocktree->UpdateAddressUnspentIndex(addressUnspentIndex)) {
-            AbortNode(state, "Failed to write address unspent index");
+            AbortNode(state, "Error al escribir el índice no utilizado de la dirección");
             return DISCONNECT_FAILED;
         }
     }
@@ -1966,7 +1966,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     }
 
     int64_t nTime1 = GetTimeMicros(); nTimeCheck += nTime1 - nTimeStart;
-    LogPrint("bench", "    - Sanity checks: %.2fms [%.2fs]\n", 0.001 * (nTime1 - nTimeStart), nTimeCheck * 0.000001);
+    LogPrint("bench", "    - Controles de salud: %.2fms [%.2fs]\n", 0.001 * (nTime1 - nTimeStart), nTimeCheck * 0.000001);
 
     // Do not allow blocks that contain transactions which 'overwrite' older transactions,
     // unless those are already completely spent.
@@ -2230,25 +2230,25 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
 
     if (fTxIndex)
         if (!pblocktree->WriteTxIndex(vPos))
-            return AbortNode(state, "Failed to write transaction index");
+            return AbortNode(state, "Fallo al escribir el índice de la transacción");
 
     if (fAddressIndex) {
         if (!pblocktree->WriteAddressIndex(addressIndex)) {
-            return AbortNode(state, "Failed to write address index");
+            return AbortNode(state, "Fallo al escribir el indice de la dirección");
         }
 
         if (!pblocktree->UpdateAddressUnspentIndex(addressUnspentIndex)) {
-            return AbortNode(state, "Failed to write address unspent index");
+            return AbortNode(state, "Error al escribir el índice no enviado de la dirección");
         }
     }
 
     if (fSpentIndex)
         if (!pblocktree->UpdateSpentIndex(spentIndex))
-            return AbortNode(state, "Failed to write transaction index");
+            return AbortNode(state, "Fallo al escribir el índice de la transacción");
 
     if (fTimestampIndex)
         if (!pblocktree->WriteTimestampIndex(CTimestampIndexKey(pindex->nTime, pindex->GetBlockHash())))
-            return AbortNode(state, "Failed to write timestamp index");
+            return AbortNode(state, "Fallo al crear la marca de tiempo");
 
     // add this block to the view's block chain
     view.SetBestBlock(pindex->GetBlockHash());
@@ -2340,7 +2340,7 @@ bool static FlushStateToDisk(CValidationState &state, FlushStateMode mode) {
                 setDirtyBlockIndex.erase(it++);
             }
             if (!pblocktree->WriteBatchSync(vFiles, nLastBlockFile, vBlocks)) {
-                return AbortNode(state, "Files to write to block index database");
+                return AbortNode(state, "Archivos para escribir en la base de datos de índice de bloques.");
             }
         }
         // Finally remove any pruned files
@@ -2359,7 +2359,7 @@ bool static FlushStateToDisk(CValidationState &state, FlushStateMode mode) {
             return state.Error("out of disk space");
         // Flush the chainstate (which may refer to block index entries).
         if (!pcoinsTip->Flush())
-            return AbortNode(state, "Failed to write to coin database");
+            return AbortNode(state, "Fallo al escribir la moneda en la base de datos");
         nLastFlush = nNow;
     }
     if (fDoFullFlush || ((mode == FLUSH_STATE_ALWAYS || mode == FLUSH_STATE_PERIODIC) && nNow > nLastSetChain + (int64_t)DATABASE_WRITE_INTERVAL * 1000000)) {
@@ -2432,7 +2432,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
         if (nUpgraded > 100/2)
         {
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
-            strMiscWarning = _("Warning: Unknown block versions being mined! It's possible unknown rules are in effect");
+            strMiscWarning = _("Alerta: Versiones de bloques desconocidos siendo minados! Es posible que haya reglas desconocidas vigentes.");
             if (!fWarned) {
                 CAlert::Notify(strMiscWarning, true);
                 fWarned = true;
@@ -2449,7 +2449,7 @@ bool static DisconnectTip(CValidationState& state, const Consensus::Params& cons
     // Read block from disk.
     CBlock block;
     if (!ReadBlockFromDisk(block, pindexDelete, consensusParams))
-        return AbortNode(state, "Failed to read block");
+        return AbortNode(state, "Fallo al leer el bloque");
     // Apply the block atomically to the chain state.
     int64_t nStart = GetTimeMicros();
     {
@@ -2508,7 +2508,7 @@ bool static ConnectTip(CValidationState& state, const CChainParams& chainparams,
     CBlock block;
     if (!pblock) {
         if (!ReadBlockFromDisk(block, pindexNew, chainparams.GetConsensus()))
-            return AbortNode(state, "Failed to read block");
+            return AbortNode(state, "Fallo al leer el bloque");
         pblock = &block;
     }
     // Apply the block atomically to the chain state.
@@ -3268,10 +3268,10 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
     unsigned int nSigOps = 0;
     BOOST_FOREACH(const CTransaction& tx, block.vtx) {
         if (!IsFinalTx(tx, nHeight, nLockTimeCutoff)) {
-            return state.DoS(10, error("%s: contains a non-final transaction", __func__), REJECT_INVALID, "bad-txns-nonfinal");
+            return state.DoS(10, error("%s: contiene la transacción no final", __func__), REJECT_INVALID, "bad-txns-nonfinal");
         }
         if (fDIP0001Active_context && ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > MAX_STANDARD_TX_SIZE) {
-            return state.DoS(100, error("%s: contains an over-sized transaction", __func__), REJECT_INVALID, "bad-txns-oversized");
+            return state.DoS(100, error("%s: contiene una transacción de gran tamaño", __func__), REJECT_INVALID, "bad-txns-oversized");
         }
         nSigOps += GetLegacySigOpCount(tx);
     }
@@ -3613,7 +3613,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
 
     // Check for nMinDiskSpace bytes (currently 50MB)
     if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
-        return AbortNode("Disk space is low!", _("Error: Disk space is low!"));
+        return AbortNode("El espacio en disco es bajo!", _("Error: El espacio en disco es bajo!"));
 
     return true;
 }
@@ -3798,7 +3798,7 @@ bool static LoadBlockIndexDB()
 
 CVerifyDB::CVerifyDB()
 {
-    uiInterface.ShowProgress(_("Verifying blocks..."), 0);
+    uiInterface.ShowProgress(_("Verificando bloques..."), 0);
 }
 
 CVerifyDB::~CVerifyDB()
@@ -3827,7 +3827,7 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
     for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev)
     {
         boost::this_thread::interruption_point();
-        uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
+        uiInterface.ShowProgress(_("Verificando bloques..."), std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
         if (pindex->nHeight < chainActive.Height()-nCheckDepth)
             break;
         CBlock block;
@@ -3871,7 +3871,7 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
         CBlockIndex *pindex = pindexState;
         while (pindex != chainActive.Tip()) {
             boost::this_thread::interruption_point();
-            uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
+            uiInterface.ShowProgress(_("Verificando bloques..."), std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
             pindex = chainActive.Next(pindex);
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex, chainparams.GetConsensus()))
@@ -4305,14 +4305,14 @@ std::string GetWarnings(const std::string& strFor)
     if (fLargeWorkForkFound)
     {
         nPriority = 2000;
-        strStatusBar = strRPC = "Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.";
-        strGUI = _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
+        strStatusBar = strRPC = "Warning: La red no parece estar completamente de acuerdo! Algunos mineros parecen estar experimentando problemas.";
+        strGUI = _("Warning: La red no parece estar completamente de acuerdo! Algunos mineros parecen estar experimentando problemas.");
     }
     else if (fLargeWorkInvalidChainFound)
     {
         nPriority = 2000;
-        strStatusBar = strRPC = "Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.";
-        strGUI = _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
+        strStatusBar = strRPC = "Warning: ¡No parece que estemos de acuerdo con nuestros compañeros! Es posible que deba actualizar, o que otros nodos deban actualizar.";
+        strGUI = _("Warning: ¡No parece que estemos de acuerdo con nuestros compañeros! Es posible que deba actualizar, o que otros nodos deban actualizar.");
     }
 
     // Alerts
